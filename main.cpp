@@ -1,3 +1,5 @@
+//Carlos Gerardo Olivas Cordova
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -37,7 +39,7 @@ bool isInArray(char str, string arr) {
 // Metodo recursivo Regex que avanza a lo largo del string clasificando sus diferentes componentes
 void regex(string str, int positionOnStr) {
 
-    string tempStr = "";
+    string tempStr;
 
     //Si el caracter es un '/' o si muiestra indicios de ser un comentario
     if (str[positionOnStr] == '/') {
@@ -56,7 +58,7 @@ void regex(string str, int positionOnStr) {
             positionOnStr++;
         }
     }
-    //
+    //Si el caracter es algun simbolo o operador
     else if(isInArray(str[positionOnStr], operators)) {
         
         tempStr.push_back(str[positionOnStr]);
@@ -79,7 +81,6 @@ void regex(string str, int positionOnStr) {
         positionOnStr++;
     }
     //Compruba si el caracter es un numero entero
-    //falta que detecte negativo y exponenciales
     else if (isInArray(str[positionOnStr], numbers)) {
         
         if (str[positionOnStr - 1] == '-')
@@ -89,7 +90,6 @@ void regex(string str, int positionOnStr) {
             tempStr.push_back(str[positionOnStr]);
             positionOnStr++;
         }
-
         cout << tempStr << " - Real" << endl;
     }
     //Comprueba si el caracter es una variable
@@ -101,11 +101,11 @@ void regex(string str, int positionOnStr) {
         }
         cout << tempStr << " - Variable" << endl;
     }
-    //En caso de que no lo detecte lo salta
+    //En caso de que no reconozca el caracter lo salta
     else {
         positionOnStr++;
     }
-
+    //Continua la recursividad si aun no termina de recorrer todo el String
     if (str.length() > positionOnStr)
         regex(str, positionOnStr);
 }
