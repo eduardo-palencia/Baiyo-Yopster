@@ -1,0 +1,28 @@
+        
+        //Si el caracter es un '/' o si muiestra indicios de ser un comentario
+        if (str[positionOnStr] == '/') {
+
+            if (str[positionOnStr+1] == '/') {
+                
+                while (str[positionOnStr] != '\n') {
+                    tempStr.push_back(str[positionOnStr]);
+                    positionOnStr++;
+                }
+                cout << tempStr << " - Comentario" << endl;
+                commentList.push_back(tempStr);
+            }
+            else if (str[positionOnStr-1] != '/' || str[positionOnStr+1] != '/') {
+                cout << tempStr << " - Operador" << endl;
+                operatorList.push_back(str[positionOnStr]);
+            }
+        }
+        else if (variables.find(str[positionOnStr])) {
+
+            while (variables.find(str[positionOnStr])) {
+                tempStr.push_back(str[positionOnStr]);
+                positionOnStr++;
+            }
+
+            variableList.push_back(tempStr);
+            cout << tempStr << " - Variable" << endl;
+        }

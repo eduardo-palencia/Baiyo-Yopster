@@ -4,16 +4,16 @@
 
 using namespace std;
 
-char letters[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-                  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-char symbols[] = {'(', ')', '_', '.'};
-char operators[] = {'+', '-', '/', '*', 'E'};
-char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+#pragma region 
+string variables = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890";
+string operators = "+-*=/^()";
+string numbers = "1234567890E";
+#pragma endregion
 
+//Metodo que lee el archivo a utilizar y regresa un string con el contenido
 string readFile() {
 
     string tempLine, str;
-
     fstream file;
     file.open("xd.txt");
 
@@ -23,50 +23,94 @@ string readFile() {
     return str;
 }
 
-void regex(string str) {
+//Metodo que compruabs si el caracter recibido se encuentra dentro de la cadena recibida y regresa un booleano
+bool isInArray(char str, string arr) {
 
-    int count = 0;
-    char tempChar;
-    string tempStr;
-    vector<string> commentList;
-    vector<char> operatorList;
-
-
-    for(int i = 0; str.length() > i; i++) {
-
-        //tempChar = str[i];
-        //cout << tempChar;
-
-      
-
-      if(str[i] == '/') {
-
-           if (str[i+1] == '/') {
-            
-                count = 0;
-
-               while (str[i + count] != '\n') {
-                   tempStr.push_back(str[i + count]);
-                   count++;
-               }
-               commentList.push_back(tempStr);
-           } 
-           else {
-               operatorList.push_back(str[i]);
-           }
-        }
+    for (int i = 0; i < arr.length(); i++) {
+        if (arr[i] == str)
+            return true;
     }
 
-    for(int i = 0; i < commentList.size(); i++)
-        cout << commentList[i] << endl;
+    return false;
+}
 
-    for(int i = 0; i < operatorList.size(); i++)
-        cout << operatorList[i] << endl;
+// Metodo recursivo Regex que avanza a lo largo del string clasificando sus diferentes componentes
+void regex(string str, int positionOnStr) {
 
+    string tempStr = "";
+
+    //Si el caracter es un '/' o si muiestra indicios de ser un comentario
+    if (str[positionOnStr] == '/') {
+
+        if (str[positionOnStr+1] == '/') {
+            
+            while (str[positionOnStr] != '\n') {
+                tempStr.push_back(str[positionOnStr]);
+                positionOnStr++;
+            }
+            cout << tempStr << " - Comentario" << endl;
+        }
+        else if (str[positionOnStr-1] != '/' || str[positionOnStr+1] != '/') {
+            tempStr.push_back(str[positionOnStr]);
+            cout << tempStr << " - Operador" << endl;
+            positionOnStr++;
+        }
+    }
+    //
+    else if(isInArray(str[positionOnStr], operators)) {
+        
+        tempStr.push_back(str[positionOnStr]);
+
+        if (str[positionOnStr] == '=')
+            cout << tempStr << " - Asignacion" << endl;
+        else if (str[positionOnStr] == '+')
+            cout << tempStr << " - Suma" << endl;
+        else if (str[positionOnStr] == '-')
+            cout << tempStr << " - Resta" << endl;
+        else if (str[positionOnStr] == '^')
+            cout << tempStr << " - Potencia" << endl;
+        else if (str[positionOnStr] == '*')
+            cout << tempStr << " - Multiplicacion" << endl;
+        else if (str[positionOnStr] == '(')
+            cout << tempStr << " - Parentesis que abre" << endl;
+        else if (str[positionOnStr] == ')')
+            cout << tempStr << " - Parentesis que cierra" << endl;
+        
+        positionOnStr++;
+    }
+    //Compruba si el caracter es un numero entero
+    //falta que detecte negativo y exponenciales
+    else if (isInArray(str[positionOnStr], numbers)) {
+        
+        if (str[positionOnStr - 1] == '-')
+            tempStr.push_back(str[positionOnStr - 1]);
+
+        while (isInArray(str[positionOnStr], numbers) || str[positionOnStr] == '.' || str[positionOnStr] == '-') {
+            tempStr.push_back(str[positionOnStr]);
+            positionOnStr++;
+        }
+
+        cout << tempStr << " - Real" << endl;
+    }
+    //Comprueba si el caracter es una variable
+    else if (isInArray(str[positionOnStr], variables)) {
+
+        while (isInArray(str[positionOnStr], variables)) {
+            tempStr.push_back(str[positionOnStr]);
+            positionOnStr++;
+        }
+        cout << tempStr << " - Variable" << endl;
+    }
+    //En caso de que no lo detecte lo salta
+    else {
+        positionOnStr++;
+    }
+
+    if (str.length() > positionOnStr)
+        regex(str, positionOnStr);
 }
 
 int main() {
 
-    regex(readFile());
-
+    regex(readFile(), 0);
 }
